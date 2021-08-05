@@ -350,6 +350,64 @@ function isANumber(str){
     return !/\D/.test(str);
 }
 
+function restartAllModems(){
+    var all_imsi = []
+    $('#routingTable').find('tr').each(function() {
+        imsi = $(this).find("td:nth-child(4)").html();
+        if (imsi != undefined && isANumber(imsi.toString()) && imsi.toString().length == 15) {
+            all_imsi.push(imsi);
+        }
+    });
+
+    title = "Restart ALL modems?"
+    warning_message = "Do you REALLY want to restart ALL modems"
+
+    $('<div id="dialog-confirm" title=" ' + title + '">' +
+        '<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;">' +
+        '</span>' + warning_message + '</p></div>').dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        buttons: {
+            "Restart Modem": function() {
+                $( this ).dialog( "close" );
+                all_imsi.forEach(function(imsi){
+                    data = {
+                        imsi: imsi.toString(),
+                    }
+                    json_data = JSON.stringify(data)
+                    $.postJSON('/restartmodem', json_data).done(function(data) {
+                        warning_message = "Modem restart initiated. Check status later on"
+                        title = "RESTART OK!"
+                        showToastr("warning", warning_message);
+                    }).fail(function(data){
+                        response_message = data.responseJSON.message
+                        error_message = "Can't restart modem! ERROR_CODE: " + data.status + ". ERROR_MESSAGE:" + response_message;
+                        showToastr("error", error_message);
+                    });
+                });
+
+            },
+            "Cancel": function() {
+                $( this ).dialog( "close" );
+            }
+        }
+    });
+
+    $('#routingTable').find('tr').each(function() {
+        var last_th = $(this).find('th').eq(-1).html()
+        if (last_th != undefined && !last_th.match(/.*maintenance.*/)) {
+            $(this).find('th').eq(-1).after('<th>maintenance <button class="btn" type="button" onclick="restartAllModems()">Restart ALL</button></th>');
+        }
+        var last_td = $(this).find('td').eq(-1).html()
+        if (last_td != undefined && !last_td.match(/.*restartModem.*/)) {
+            sim_imsi = $(this).find("td:nth-child(4)").html();
+            $(this).find('td').eq(-1).after('<td><button class="btn" type="button" onclick="restartModem(' + sim_imsi + ')">Restart</button></td>');
+        }
+    });
+}
+
 function restartModem(imsi) {
     if (isANumber(imsi.toString()) && imsi.toString().length == 15){
         data = {
@@ -409,8 +467,8 @@ function getRouting() {
         });
         $('#routingTable').find('tr').each(function() {
             var last_th = $(this).find('th').eq(-1).html()
-            if (last_th != undefined && last_th != "maintenance") {
-                $(this).find('th').eq(-1).after('<th>maintenance</th>');
+            if (last_th != undefined && !last_th.match(/.*maintenance.*/)) {
+                $(this).find('th').eq(-1).after('<th>maintenance <button class="btn" type="button" onclick="restartAllModems()">Restart ALL</button></th>');
             }
             var last_td = $(this).find('td').eq(-1).html()
             if (last_td != undefined && !last_td.match(/.*restartModem.*/)) {

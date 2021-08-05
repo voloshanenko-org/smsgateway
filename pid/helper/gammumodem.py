@@ -132,7 +132,7 @@ class USBModem(object):
 
         abspath = pidglobals.abspath
         gammulogfile = modem["logfile"] if modem.get("logfile") else pidglobals.abspath +  "/logs/modem_" + modem["modemid"] + ".log"
-        with open (gammulogfile, 'r') as fd:
+        with open (gammulogfile, 'r', encoding = "utf-8") as fd:
             gammulog_lines = fd.readlines()
 
         blocked_regex_list = [".*CMS Error 8:.*"]
