@@ -14,6 +14,7 @@ RUN apk add --update --no-cache socat openssh-client gammu-dev gammu libxml2-dev
 	&& apk add --no-cache --virtual .build-deps \
 		mariadb-dev \
 		gcc \
+		g++ \
 		musl-dev \
                 openssl-dev \
                 libffi-dev \
