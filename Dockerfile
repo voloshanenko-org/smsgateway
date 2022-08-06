@@ -4,5 +4,6 @@ EXPOSE 7777
 EXPOSE 7788
 
 COPY  requirements.txt /requirements.txt
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN apt-get install gammu \
+    pip3 install --no-cache-dir -r requirements.txt
 COPY . /app
