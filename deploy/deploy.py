@@ -63,7 +63,7 @@ def main():
                     thread.join()
 
 	        # Get only UNIQ images
-	        containers_images = set(containers_images)
+                containers_images = set(containers_images)
             if containers_images:
                 threads = []
                 for image in containers_images:
