@@ -4,7 +4,9 @@ EXPOSE 7777
 EXPOSE 7788
 
 COPY requirements.txt /requirements.txt
-RUN apt-get update && \
-    apt-get install -y libgammu-dev && \
-    pip3 install --no-cache-dir -r requirements.txt
+RUN apt update && \
+    apt install -y gcc libgammu-dev && \
+    pip3 install --no-cache-dir -r requirements.txt && \
+    apt purge -y gcc && \
+    apt autoremove -y
 COPY . /app
