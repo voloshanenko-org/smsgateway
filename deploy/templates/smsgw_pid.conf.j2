@@ -1,0 +1,18 @@
+# You can find the description for this configuration file in our
+# github-wiki -> https://github.com/n0r1sk/smsgateway/wiki/Configuration
+
+[DEFAULT]
+
+[db]
+
+[wis]
+
+[pis]
+
+[pid]
+testmode = On
+pidid = pid_{{ loop_idx + 1 }}
+loglevel = DEBUG
+carrierscfg = {"Vodafone": { "balance_ussd": "*101#", "balance_regex": ".* (.*) grn. .*", "sms_limit": 49, "check_sim_status": false }, "lifecell": { "balance_ussd": "*111#", "balance_regex": ".* (.*) grn, .*", "sms_limit": 97, "check_sim_status": true }}
+modemlist = [{ "modemid": "{{ loop_idx + 1 }}", "block_incoming_calls": true, "remote_ip": "{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}", "remote_port": "{{ initial_pid_remote_port + loop_idx + 1 }}", "regex": "(\\+38|fallback)", "lbfactor": 1, "pin": "null", "gammusection": 0, "ctryexitcode": "+", "modemname": "Modem #{{ loop_idx + 1 }}"}]
+pisurllist = [{"url": "ws://{{ pis_service_identifier }}:7788"}]

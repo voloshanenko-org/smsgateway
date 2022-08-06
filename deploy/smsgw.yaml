@@ -1,0 +1,150 @@
+
+---
+- hosts: smsgw
+  become: yes
+  vars_files:
+    - ./vars/vars.yaml
+  tasks:
+    - name: Update apt repo and cache on all Debian/Ubuntu boxes
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+
+    #- name: Upgrade all packages on servers
+    #  apt: upgrade=dist force_apt_get=yes
+
+    - name: Check if a reboot is needed on all servers
+      register: reboot_required_file
+      stat: path=/var/run/reboot-required get_md5=no
+
+    - name: Reboot the box if kernel updated
+      reboot:
+        msg: "Reboot initiated by Ansible for kernel updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: reboot_required_file.stat.exists
+
+    - name: Install build dependencies
+      apt:
+        pkg:
+        - linux-headers-generic
+        - build-essential
+        state: latest
+
+    - name: Load cdc-acm driver from the kernel
+      modprobe:
+        name: cdc-acm
+        state: present
+      register: cdc_acm_present
+
+    - name: Whitelist the cdc-acm driver module
+      kernel_blacklist:
+        name: cdc-acm
+        state: absent
+
+    - name: Set Gammu driver archive filename based on remote url
+      set_fact:
+        gammu_dirname={{ gammu_remote_url.split('/')[-1].split('.')[0] }}
+
+    - name: Create SMS Gateway root dir directory
+      file:
+        path: "{{ smsgateway_local_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download and unarchive Gammu sources
+      unarchive:
+        src: "{{ gammu_remote_url }}"
+        dest: "{{ smsgateway_local_dir }}"
+        list_files: yes
+        remote_src: yes
+        creates: "{{ smsgateway_local_dir }}/{{ gammu_dirname }}"
+      register: archive_gammu_contents
+      retries: 3
+      delay: 3
+      until: archive_gammu_contents is succeeded
+
+    - name: Set Gammu archive folder as fact
+      set_fact:
+        gammu_src_path="{{ smsgateway_local_dir }}/{{ archive_gammu_contents.files[0].split('/')[0] }}"
+
+    - name: Check if Gammu already configured
+      command: "find -type d -name build-configure"
+      args:
+        chdir: "{{ gammu_src_path }}"
+      register: gammu_configure_file
+
+    - name: Set Gammu configure based on config file
+      set_fact:
+        gammu_configured={{ gammu_configure_file.stdout }}
+      when: gammu_configure_file.stdout | length > 0
+
+    - name: Configure Gammu
+      command: "./configure"
+      args:
+        chdir: "{{ gammu_src_path }}"
+      when: gammu_configured is not defined
+      register: gammu_configured
+
+    - name: Compiling and installing Gammu
+      command: "make install"
+      args:
+        chdir: "{{ gammu_src_path }}"
+      register: gammu_built
+
+    - name: Execute ldconfig
+      command: "ldconfig"
+
+    - name: Find all TTY modems
+      shell: "ls * | grep ttyACM | sort -V"
+      args:
+        chdir: "/dev"
+      register: tty_devices
+
+    - name: Generate SMSGateway config for each PID
+      template:
+        src: templates/smsgw_pid.conf.j2
+        dest: "../conf/smsgw_{{ loop_idx + 1 }}.conf"
+      loop: "{{ tty_devices.stdout_lines }}"
+      loop_control:
+        index_var: loop_idx
+      when: tty_devices.stdout_lines | length > 0
+      delegate_to: localhost
+      become: no
+
+    - name: Generate SMSGateway config for PIS/WIS
+      template:
+        src: templates/smsgw_shared.conf.j2
+        dest: "../conf/smsgw.conf"
+      delegate_to: localhost
+      become: no
+
+    - name: Generate docker-compose config for PIS/WIS/PID stack
+      template:
+        src: templates/docker-compose.yml.j2
+        dest: "../docker-compose.yml"
+      delegate_to: localhost
+      become: no
+
+    - name: Generate PIDs systemd templates
+      template:
+        src: "templates/systemd_pid.service.j2"
+        dest: "{{ systemd_dir }}/smsgw-pid-{{ loop_idx + 1 }}.service"
+        mode: 0755
+      loop: "{{ tty_devices.stdout_lines }}"
+      loop_control:
+        index_var: loop_idx
+      when: tty_devices.stdout_lines | length > 0
+      register: smsgw_pid_systemd_config
+
+    - name: Start PIDs SMSGateway services
+      systemd:
+        state: started
+        daemon_reload: yes
+        enabled: yes
+        name: "smsgw-pid-{{ loop_idx + 1 }}"
+      loop: "{{ tty_devices.stdout_lines }}"
+      loop_control:
+        index_var: loop_idx
+      when: tty_devices.stdout_lines | length > 0

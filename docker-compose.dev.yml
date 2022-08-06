@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+
+  wis:
+    build: .
+    ports:
+    - "7777:7777"
+    working_dir: /app/wis
+    command: ["python", "wis.py"]
+    restart: unless-stopped
+    environment:
+    - ASTERISK_AMI_PASSWORD=${ASTERISK_AMI_PASSWORD}  
+    volumes:
+      - .:/app
+
+  pis:
+    build: .
+    ports:
+    - "7788:7788"
+    working_dir: /app/pis
+    command: ["python", "pis.py"]
+    restart: unless-stopped
+    environment:
+    - ASTERISK_AMI_PASSWORD=${ASTERISK_AMI_PASSWORD}
+    volumes:
+      - .:/app
+
+  pid_1:
+    build: .
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - ASTERISK_AMI_PASSWORD=${ASTERISK_AMI_PASSWORD}
+    volumes:
+      - .:/app
+
+  pid_2:
+    build: .
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - ASTERISK_AMI_PASSWORD=${ASTERISK_AMI_PASSWORD}
+    volumes:
+      - .:/app

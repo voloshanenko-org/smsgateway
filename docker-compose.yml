@@ -1,0 +1,324 @@
+version: '2'
+
+services:
+
+  wis:
+    image: docker.voloshanenko.com/smsgateway
+    ports:
+    - "7777:7777"
+    working_dir: /app/wis
+    command: ["python", "wis.py"]
+    restart: unless-stopped
+    environment:
+    - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - VIRTUAL_PORT=${VIRTUAL_PORT}
+    - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    - ROOT_PASSWORD_HASH=${ROOT_PASSWORD_HASH}
+    - PRODUCTION=${PRODUCTION}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+      - ${LOCAL_DIR}/db:/app/common/sqlite/
+    networks:
+      - webproxy
+
+  pis:
+    image: docker.voloshanenko.com/smsgateway
+    ports:
+    - "7788:7788"
+    working_dir: /app/pis
+    command: ["python", "pis.py"]
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_1:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_2:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_3:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_4:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=4
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_5:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_6:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=6
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_7:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=7
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_8:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=8
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_9:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=9
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_10:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_11:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=11
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_12:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=12
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_13:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=13
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_14:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=14
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_15:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=15
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+  pid_16:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID=16
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+    networks:
+      - webproxy
+networks:
+  webproxy:
+    external:
+      name: webproxy

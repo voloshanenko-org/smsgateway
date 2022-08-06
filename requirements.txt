@@ -1,0 +1,13 @@
+ws4py
+pycrypto
+cherrypy
+ldap3
+requests
+python-gammu
+flask
+flask-login
+flask-sqlalchemy
+timeout-decorator
+bcrypt
+apscheduler
+configparser

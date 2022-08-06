@@ -1,0 +1,13 @@
+[Unit]
+Description=smsgateway socat #{{ loop_idx + 1 }}
+
+[Service]
+Type=simple
+StandardOutput=syslog
+StandardError=syslog
+User=root
+ExecStart=/usr/bin/socat tcp-listen:{{ initial_pid_remote_port + loop_idx + 1 }},reuseaddr,forever file:/dev/ttyACM{{ loop_idx }},nonblock,waitlock=/var/run/pseudo_tty{{ loop_idx }}.lock,b115200,raw,echo=0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+# You can find the description for this configuration file in our
+# github-wiki -> https://github.com/n0r1sk/smsgateway/wiki/Configuration
+
+[DEFAULT]
+
+[db]
+
+[wis]
+allowedmobileprefixes = {{ wis_allowed_mobile_prefixes }}
+allowedstarttime = {{ allowed_start_time }}
+allowedfinishtime = {{ allowed_finish_time }}
+resendstarttime = {{ resend_start_time }} 
+resendfinishtime = {{ resend_finish_time }}
+resendinterval = {{ resend_interval }}
+
+loglevel = DEBUG
+ipaddress = 0.0.0.0
+pissendtimeout = 120
+
+[pis]
+loglevel = DEBUG
+ipaddress = 0.0.0.0
+wisurllist = [{"url": "http://{{ wis_service_identifier }}:7777"}]
+maxwaitpid = 120
+
+[pid]
+loglevel = DEBUG

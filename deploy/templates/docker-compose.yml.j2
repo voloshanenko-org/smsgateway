@@ -1,0 +1,71 @@
+version: '2'
+
+services:
+
+  {{ wis_service_identifier }}:
+    image: docker.voloshanenko.com/smsgateway
+    ports:
+    - "7777:7777"
+    working_dir: /app/wis
+    command: ["python", "wis.py"]
+    restart: unless-stopped
+    environment:
+    - VIRTUAL_HOST=${VIRTUAL_HOST}
+    - VIRTUAL_PORT=${VIRTUAL_PORT}
+    - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+    - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    - ROOT_PASSWORD_HASH=${ROOT_PASSWORD_HASH}
+    - PRODUCTION=${PRODUCTION}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+      - ${LOCAL_DIR}/db:/app/common/sqlite/
+    networks:
+      - webproxy
+
+  pis:
+    image: docker.voloshanenko.com/smsgateway
+    ports:
+    - "7788:7788"
+    working_dir: /app/pis
+    command: ["python", "pis.py"]
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+{% for items in tty_devices.stdout_lines %}
+  pid_{{ loop.index }}:
+    image: docker.voloshanenko.com/smsgateway
+    working_dir: /app/pid
+    command: ["python", "pid.py"]
+    restart: unless-stopped
+    environment:
+    - PID_ID={{ loop.index }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
+    volumes:
+      - ${LOCAL_DIR}/logs:/app/logs/
+    networks:
+      - webproxy
+
+{% endfor %}
+    networks:
+      - webproxy
+networks:
+  webproxy:
+    external:
+      name: webproxy

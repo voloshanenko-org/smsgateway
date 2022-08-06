@@ -1,0 +1,18 @@
+---
+wis_service_identifier: "wis"
+pis_service_identifier: "pis"
+pid_service_identifier: "pid"
+
+allowed_start_time: "01:00" 
+allowed_finish_time: "23:30"
+resend_start_time: "8:00"
+resend_finish_time: "23:30"
+resend_interval: "1"
+
+wis_allowed_mobile_prefixes: "38067, 38068, 38096, 38097, 38098, 38050, 38066, 38095, 38099, 38063, 38073, 38093"
+
+systemd_dir: "/etc/systemd/system"
+smsgateway_local_dir: "/var/lib/smsgateway"
+smsgateway_docker_dir: "/app"
+initial_pid_remote_port: 2000
+gammu_remote_url: "https://dl.cihar.com/gammu/releases/gammu-1.41.0.zip"

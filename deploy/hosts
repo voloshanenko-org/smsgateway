@@ -1,0 +1,11 @@
+[all:vars]
+ansible_user='root'
+ansible_ssh_private_key_file=~/.ssh/cloudswiss.pem
+
+ansible_become=false
+ansible_become_method=sudo
+ansible_python_interpreter='/usr/bin/env python3'
+
+
+[smsgw]
+smsgw1 ansible_host=10.100.102.105
