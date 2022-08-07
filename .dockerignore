@@ -1,5 +1,6 @@
+.dockerignore
 # ignore .git and .cache folders
 .git
-logs
+logs/*log*
 deploy
 .cache

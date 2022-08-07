@@ -314,7 +314,7 @@ class Watchdog(threading.Thread):
     def dispatch_sms(self, smstrans, route):
         rid = route[0]["routingid"]
         modemid = route[0]["modemid"]
-        if not rid in wisglobals.watchdogRouteThread or not wisglobals.watchdogRouteThread[rid].isAlive() or not rid in wisglobals.watchdogRouteThreadQueue:
+        if not rid in wisglobals.watchdogRouteThread or not wisglobals.watchdogRouteThread[rid].is_alive() or not rid in wisglobals.watchdogRouteThreadQueue:
             wd = Watchdog_Route(modemid, "Watchdog_Route", rid)
             wd.daemon = True
             wd.start()

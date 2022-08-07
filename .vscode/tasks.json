@@ -1,0 +1,40 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "docker-build",
+			"label": "docker-build",
+			"platform": "python",
+			"dockerBuild": {
+				"tag": "smsgateway:latest",
+				"dockerfile": "${workspaceFolder}/Dockerfile",
+				"context": "${workspaceFolder}",
+				"pull": true
+			}
+		},
+		{
+			"type": "docker-run",
+			"label": "docker-run: debug",
+			"dependsOn": [
+				"docker-build"
+			],
+			"dockerRun": {
+				"ports": [
+					{ 
+						"hostPort": 7777, 
+						"containerPort": 7777 
+					}
+				],
+				"volumes": [
+					{
+						"containerPath": "/app",
+						"localPath": "${workspaceFolder}"
+					}
+				]	
+			},
+			"python": {
+				"file": "/app/wis/wis.py"
+			}
+		}
+	]
+}

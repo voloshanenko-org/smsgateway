@@ -18,13 +18,16 @@ import socket
 import json
 import os
 import sys
-sys.path.insert(0, "..")
 import re
 import uuid
 from queue import Queue
 import urllib.request
 import threading
 from datetime import datetime
+
+from pathlib import Path
+d = Path(__file__).resolve().parents[1]
+sys.path.insert(1, str(d))
 
 from common import error
 from common.config import SmsConfig
@@ -70,7 +73,7 @@ class Root(object):
             rt = Router(2, "Router")
             rt.daemon = True
             rt.start()
-        elif not wisglobals.routerThread.isAlive():
+        elif not wisglobals.routerThread.is_alive():
             smsgwglobals.wislogger.debug("Router died! Restarting it!")
             rt = Router(2, "Router")
             rt.daemon = True
@@ -83,7 +86,7 @@ class Root(object):
             wd = Watchdog(1, "Watchdog", SMS_QUEUE)
             wd.daemon = True
             wd.start()
-        elif not wisglobals.watchdogThread.isAlive():
+        elif not wisglobals.watchdogThread.is_alive():
             smsgwglobals.wislogger.debug("Watchdog died! Restarting it!")
             wd = Watchdog(1, "Watchdog", SMS_QUEUE)
             wd.daemon = True
@@ -188,7 +191,7 @@ class Root(object):
             if wisglobals.routerThread is None:
                 status['router'] = 'noobject'
 
-            if wisglobals.routerThread.isAlive():
+            if wisglobals.routerThread.is_alive():
                 status['router'] = 'alive'
             else:
                 status['router'] = 'dead'
@@ -196,7 +199,7 @@ class Root(object):
             if wisglobals.watchdogThread is None:
                 status['watchdog'] = 'noobject'
 
-            if wisglobals.watchdogThread.isAlive():
+            if wisglobals.watchdogThread.is_alive():
                 status['watchdog'] = 'alive'
             else:
                 status['watchdog'] = 'dead'
@@ -332,7 +335,7 @@ class Root(object):
                     data = GlobalHelper.encodeAES('{"ROUTER":"noobject"}')
                     return data
 
-                if wisglobals.routerThread.isAlive():
+                if wisglobals.routerThread.is_alive():
                     cherrypy.response.status = 200
                     data = GlobalHelper.encodeAES('{"ROUTER":"alive"}')
                     return data
@@ -648,8 +651,8 @@ class Wisserver(object):
         # Start scheduler for sms resending and other maintenance operations
         Watchdog_Scheduler()
 
-        cherrypy.quickstart(Root(), '/',
-                            'wis-web.conf')
+        config_file = os.path.join(Path(__file__).resolve().parents[0], 'wis-web.conf')
+        cherrypy.quickstart(Root(), '/', config_file)
 
 
 class StatsLogstash:

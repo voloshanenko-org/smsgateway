@@ -27,7 +27,10 @@ import subprocess
 import time
 import traceback
 import configparser
-sys.path.insert(0, "..")
+
+from pathlib import Path
+d = Path(__file__).resolve().parents[1]
+sys.path.insert(1, str(d))
 
 import pidglobals
 from common import smsgwglobals

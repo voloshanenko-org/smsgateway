@@ -25,7 +25,9 @@ from datetime import timedelta
 from ws4py.server.cherrypyserver import WebSocketTool, WebSocketPlugin
 from ws4py.websocket import WebSocket
 
-sys.path.insert(0, "..")
+from pathlib import Path
+d = Path(__file__).resolve().parents[1]
+sys.path.insert(1, str(d))
 
 import pisglobals
 from helper.towis import WIS
