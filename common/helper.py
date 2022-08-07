@@ -70,7 +70,9 @@ class GlobalHelper(object):
             return c.decrypt(base64.b64decode(e))
 
         decoded = decAES(cipher, ciphertext)
-
+        print(decoded)
+        print(decoded.rstrip(PADDING))
+        
         ciphertextbase64 = base64.b64decode(decoded.rstrip(PADDING).encode('utf-8'))
 
         return ciphertextbase64
