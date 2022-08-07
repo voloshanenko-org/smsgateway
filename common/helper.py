@@ -71,6 +71,6 @@ class GlobalHelper(object):
 
         decoded = decAES(cipher, ciphertext)
 
-        ciphertextbase64 = base64.b64decode(decoded.decode('utf-8').rstrip(PADDING).encode('utf-8'))
+        ciphertextbase64 = base64.b64decode(decoded.rstrip(PADDING))
 
         return ciphertextbase64
