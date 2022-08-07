@@ -45,6 +45,7 @@ jobs:
         env:
           VIRTUAL_HOST: ${{ secrets.VIRTUAL_HOST }}
           VIRTUAL_PORT: ${{ secrets.VIRTUAL_PORT }}
+          LOCAL_DIR: ${{ secrets.LOCAL_DIR }}
           LETSENCRYPT_HOST: ${{ secrets.VIRTUAL_HOST }}
           LETSENCRYPT_EMAIL: ${{ secrets.LETSENCRYPT_EMAIL }}
           PORTAINER_HOST: ${{ secrets.PORTAINER_HOST }}
