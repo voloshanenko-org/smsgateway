@@ -18,61 +18,41 @@ sys.path.insert(0, "..")
 from os import path
 from common.config import SmsConfig
 
+import base64
+import hashlib
+from Crypto import Random
+from Crypto.Cipher import AES
 
 class GlobalHelper(object):
 
     @staticmethod
-    def encodeAES(plaintext):
-        from Crypto.Cipher import AES
-        import base64
-
-        BLOCK_SIZE = 32
-
-        PADDING = '{'
-
+    def encodeAES(raw):
         abspath = path.abspath(path.join(path.dirname(__file__), path.pardir))
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
-        key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key.encode("utf8"), AES.MODE_CBC)
+        key = cfg.getvalue('key', '7D8FAA235238F8C2').encode('utf-8')
 
-        # in AES the plaintext has to be padded to fit the blocksize
-        # therefore create a pad
-
-        textbase64 = base64.b64encode(plaintext.encode('utf-8'))
-
-        def pad(s):
-            str_s = s.decode('utf-8')
-            new_str_s = str_s + (BLOCK_SIZE - len(str_s) % BLOCK_SIZE) * PADDING
-            return new_str_s.encode('utf8')
-
-        def encAES(c, s):
-            return base64.b64encode(c.encrypt(pad(s)))
-
-        encoded = encAES(cipher, textbase64)
-
-        return encoded
+        raw = _pad(raw)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw.encode()))
 
     @staticmethod
-    def decodeAES(ciphertext):
-        from Crypto.Cipher import AES
-        import base64
-
-        PADDING = '{'
-
+    def decodeAES(enc):
         abspath = path.abspath(path.join(path.dirname(__file__), path.pardir))
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
-        key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key.encode("utf8"), AES.MODE_CBC)
+        key = cfg.getvalue('key', '7D8FAA235238F8C2').encode('utf-8')
 
-        def decAES(c, e):
-            return c.decrypt(base64.b64decode(e))
+        enc = base64.b64decode(enc)
+        iv = enc[:AES.block_size]
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        return _unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
 
-        decoded = decAES(cipher, ciphertext)
-        print(decoded)
-        print(decoded.rstrip(PADDING))
-        
-        ciphertextbase64 = base64.b64decode(decoded.rstrip(PADDING).encode('utf-8'))
+    def _pad(s):
+        bs = AES.block_size
+        return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
 
-        return ciphertextbase64
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
