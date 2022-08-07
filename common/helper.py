@@ -34,7 +34,7 @@ class GlobalHelper(object):
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
         key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key.encode("utf8"), AES.MODE_EAX)
+        cipher = AES.new(key.encode("utf8"), AES.MODE_CBC)
 
         # in AES the plaintext has to be padded to fit the blocksize
         # therefore create a pad
@@ -42,7 +42,9 @@ class GlobalHelper(object):
         textbase64 = base64.b64encode(plaintext.encode('utf-8'))
 
         def pad(s):
-            return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+            str_s = s.decode('utf-8')
+            new_str_s = str_s + (BLOCK_SIZE - len(str_s) % BLOCK_SIZE) * PADDING
+            return new_str_s.encode('utf8')
 
         def encAES(c, s):
             return base64.b64encode(c.encrypt(pad(s)))
@@ -62,7 +64,7 @@ class GlobalHelper(object):
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
         key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key.encode("utf8"), AES.MODE_EAX)
+        cipher = AES.new(key.encode("utf8"), AES.MODE_CBC)
 
         def decAES(c, e):
             return c.decrypt(base64.b64decode(e))
