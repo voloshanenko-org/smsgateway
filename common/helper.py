@@ -49,6 +49,7 @@ class GlobalHelper(object):
         cipher = AES.new(key, AES.MODE_CBC, iv)
         return _unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
 
+    @staticmethod
     def _pad(s):
         bs = AES.block_size
         return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
