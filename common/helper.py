@@ -34,7 +34,7 @@ class GlobalHelper(object):
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
         key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key)
+        cipher = AES.new(key, AES.MODE_EAX)
 
         # in AES the plaintext has to be padded to fit the blocksize
         # therefore create a pad
@@ -67,7 +67,7 @@ class GlobalHelper(object):
         configfile = abspath + '/conf/smsgw.conf'
         cfg = SmsConfig(configfile)
         key = cfg.getvalue('key', '7D8FAA235238F8C2')
-        cipher = AES.new(key)
+        cipher = AES.new(key, AES.MODE_EAX)
 
         def decAES(c, e):
             try:
