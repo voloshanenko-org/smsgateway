@@ -39,20 +39,15 @@ class GlobalHelper(object):
         # in AES the plaintext has to be padded to fit the blocksize
         # therefore create a pad
 
-        plaintextbase64 = \
-            base64.b64encode(plaintext.encode('utf-8')).decode('utf-8')
+        textbase64 = base64.b64encode(plaintext).encode('utf-8')
 
         def pad(s):
             return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
 
-        # pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-
         def encAES(c, s):
             return base64.b64encode(c.encrypt(pad(s)))
 
-        # EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-
-        encoded = encAES(cipher, plaintextbase64)
+        encoded = encAES(cipher, textbase64)
 
         return encoded
 
@@ -70,23 +65,10 @@ class GlobalHelper(object):
         cipher = AES.new(key.encode("utf8"), AES.MODE_EAX)
 
         def decAES(c, e):
-            try:
-                ret = c.decrypt(base64.b64decode(e.encode("ASCII"))).decode("UTF-8") \
-                    .rstrip(PADDING)
-            except AttributeError:
-                ret = c.decrypt(base64.b64decode(e)).decode("UTF-8") \
-                    .rstrip(PADDING)
-
-            return ret
-
-        # DecodeAES = lambda c, e:
-        # c.decrypt(base64.b64decode(e)).decode("UTF-8").rstrip(PADDING)
+            return c.decrypt(base64.b64decode(e))
 
         decoded = decAES(cipher, ciphertext)
 
-        try:
-            ciphertextbase64 = base64.b64decode(decoded.encode("ASCII")).decode('utf-8')
-        except AttributeError:
-            ciphertextbase64 = base64.b64decode(decoded).decode('utf-8')
+        ciphertextbase64 = base64.b64decode(decoded.decode('utf-8').rstrip(PADDING))
 
         return ciphertextbase64
