@@ -1,5 +1,5 @@
 ws4py
-pycrypto
+pycryptodome
 cherrypy
 ldap3
 requests
