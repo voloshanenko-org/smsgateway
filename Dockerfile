@@ -5,7 +5,7 @@ EXPOSE 7788
 
 COPY requirements.txt /requirements.txt
 RUN apt update && \
-    apt install -y gcc libgammu-dev && \
+    apt install -y gcc socat libgammu-dev && \
     pip3 install --no-cache-dir -r requirements.txt && \
     apt purge -y gcc && \
     apt autoremove -y
