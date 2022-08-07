@@ -39,7 +39,7 @@ class GlobalHelper(object):
         # in AES the plaintext has to be padded to fit the blocksize
         # therefore create a pad
 
-        textbase64 = base64.b64encode(plaintext).encode('utf-8')
+        textbase64 = base64.b64encode(plaintext.encode('utf-8'))
 
         def pad(s):
             return s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
@@ -69,6 +69,6 @@ class GlobalHelper(object):
 
         decoded = decAES(cipher, ciphertext)
 
-        ciphertextbase64 = base64.b64decode(decoded.decode('utf-8').rstrip(PADDING))
+        ciphertextbase64 = base64.b64decode(decoded.decode('utf-8').rstrip(PADDING).encode('utf-8'))
 
         return ciphertextbase64
