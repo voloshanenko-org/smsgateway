@@ -32,6 +32,10 @@ class GlobalHelper(object):
         cfg = SmsConfig(configfile)
         key = cfg.getvalue('key', '7D8FAA235238F8C2').encode('utf-8')
 
+        def _pad(s):
+            bs = AES.block_size
+            return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
+
         raw = _pad(raw)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(key, AES.MODE_CBC, iv)
@@ -47,13 +51,8 @@ class GlobalHelper(object):
         enc = base64.b64decode(enc)
         iv = enc[:AES.block_size]
         cipher = AES.new(key, AES.MODE_CBC, iv)
+
+        def _unpad(s):
+            return s[:-ord(s[len(s)-1:])]
+
         return _unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
-
-    @staticmethod
-    def _pad(s):
-        bs = AES.block_size
-        return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
-
-    @staticmethod
-    def _unpad(s):
-        return s[:-ord(s[len(s)-1:])]
